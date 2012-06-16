@@ -97,7 +97,7 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
             <div class="rex-form-row rex-form-element-v2">
               <p class="rex-form-submit">
-                <input class="rex-form-submit" type="submit" id="submit" name="submit" value="Einstellungen speichern" />
+                <input class="rex-form-submit" type="submit" id="submit" name="submit" value="Rename Field" />
               </p>
             </div><!-- .rex-form-row -->
 
