@@ -18,14 +18,22 @@ $oldname    = rex_request('oldname', 'string');
 $newname    = rex_request('newname', 'string');
 $columndef  = rex_request('columndef', 'string');
 
+// TITLE & SUBPAGE NAVIGATION
+//////////////////////////////////////////////////////////////////////////////
+rex_title('Column Edit', $REX['ADDON'][$page]['SUBPAGES']);
+
 $db = new rex_sql;
 #$db->setDebug(true);
 
 // EDIT FIELDNAME
 if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='' && $columndef!='')
 {
-  $db->setQuery('ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` '.stripslashes($columndef).';');
-  $db->setQuery('UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';');
+  $alter_qry = 'ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` '.stripslashes($columndef).';';
+  if($db->setQuery($alter_qry)) {
+    $db->setQuery('UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';');
+  } else {
+    echo rex_warning('"'.$alter_qry.'"<br/>'.$db->getErrno().' - '.$db->getError());
+  }
 }
 
 // TABLE SELECT
@@ -53,10 +61,6 @@ $sel->setAttribute('id','xtm_fields');
 $sel->addOption('','');
 $sel->setSelected($oldname);
 $field_select = $sel->get();
-
-// TITLE & SUBPAGE NAVIGATION
-//////////////////////////////////////////////////////////////////////////////
-rex_title('Column Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
 //if(isset($fieldname_edit_warning)) {
 //  echo rex_warning($fieldname_edit_warning);
