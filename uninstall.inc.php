@@ -1,10 +1,11 @@
 <?php
 /**
- * fieldname_edit - XFORM Plugin
+ * column_edit - XFORM Plugin
  *
  * @author http://rexdev.de
- * @package redaxo4.3
+ * @package redaxo 4.3
+ * @package xform 2.9
  */
 
 
-$REX['ADDON']['install']['fieldname_edit'] = 0;
+$REX['ADDON']['install']['column_edit'] = 0;

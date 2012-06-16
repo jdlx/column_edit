@@ -1,13 +1,14 @@
 <?php
 /**
- * fieldname_edit - XFORM Plugin
+ * column_edit - XFORM Plugin
  *
  * @author http://rexdev.de
- * @package redaxo4.3
+ * @package redaxo 4.3
+ * @package xform 2.9
  */
 
 
-$myself           = 'fieldname_edit';
+$myself           = 'column_edit';
 $myroot           = $REX['INCLUDE_PATH'].'/addons/xform/plugins/'.$myself;
 $page             = rex_request('page'            , 'string'          );
 $subpage          = rex_request('subpage'         , 'string'          );
@@ -33,21 +34,21 @@ $REX['ADDON']['xform']['SUBPAGES'][] = array($myself , 'Column Edit');
 
 // RECEIVER/API
 ////////////////////////////////////////////////////////////////////////////////
-$data = rex_request('fieldname_edit','string',false);
+$data = rex_request('column_edit','string',false);
 
 if($data!==false)
 {
-  $data = json_decode(stripslashes($data),true);                                FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
+  $data = json_decode(stripslashes($data),true);                                #FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
 
   if(!is_array($data)) {
-    return fieldname_edit_reply(array('error'=>'no valid POST data'));
+    return column_edit_reply(array('error'=>'no valid POST data'));
   }
 
   switch ($data['action'])
   {
     case 'column-select-options':
       if($data['table_name']=='') {
-        fieldname_edit_reply(array('html'=>''));
+        column_edit_reply(array('html'=>''));
       }
 
       $db = new rex_sql;
@@ -70,7 +71,7 @@ if($data!==false)
         $selected = (isset($data['selected_column']) && $data['selected_column']==$v['f1']) ? ' selected="selected"' : '' ;
         $select_options .= '<option id="opt_'.$v['f1'].'" data-mysql-create-opts="'.$column_options[$v['f1']].'" value="'.$v['f1'].'" '.$selected.'>'.$v['f1'].'</option>';
       }
-      fieldname_edit_reply(array('html'=>$select_options));
+      column_edit_reply(array('html'=>$select_options));
     break;
 
     default:
@@ -80,7 +81,7 @@ if($data!==false)
 
 // GENERIC REPLY FUNC
 ////////////////////////////////////////////////////////////////////////////////
-function fieldname_edit_reply($data=false)
+function column_edit_reply($data=false)
 {
   if(!$data)
     return false;

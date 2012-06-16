@@ -1,14 +1,15 @@
 <?php
 /**
- * fieldname_edit - XFORM Plugin
+ * column_edit - XFORM Plugin
  *
  * @author http://rexdev.de
- * @package redaxo4.3
+ * @package redaxo 4.3
+ * @package xform 2.9
  */
 
 // GET PARAMS
 ////////////////////////////////////////////////////////////////////////////////
-$myself     = 'fieldname_edit';
+$myself     = 'column_edit';
 $myroot     = $REX['INCLUDE_PATH'].'/addons/xform/plugins/'.$myself.'/';
 $page       = rex_request('page', 'string');
 $subpage    = rex_request('subpage', 'string');
@@ -62,9 +63,6 @@ $sel->addOption('','');
 $sel->setSelected($oldname);
 $field_select = $sel->get();
 
-//if(isset($fieldname_edit_warning)) {
-//  echo rex_warning($fieldname_edit_warning);
-//}
 
 // MAIN
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +73,7 @@ $field_select = $sel->get();
 
   <form action="index.php" method="POST" id="settings">
     <input type="hidden" name="page" value="xform" />
-    <input type="hidden" name="subpage" value="fieldname_edit" />
+    <input type="hidden" name="subpage" value="column_edit" />
     <input type="hidden" name="func" value="savesettings" />
 
         <fieldset class="rex-form-col-1">
@@ -133,13 +131,13 @@ $field_select = $sel->get();
 
 <script>
 // GENERIC CALLBACK FUNC
-function xce_callback(data,success_func){
+function column_edit_callback(data,success_func){
   return jQuery.ajax({
     url: '../index.php',
     type: 'POST',
     data: {
       test: 'test',
-      fieldname_edit:JSON.stringify(data)
+      column_edit:JSON.stringify(data)
     },
     success: success_func,
     error: function(xhr, ajaxOptions, thrownError){
@@ -156,7 +154,7 @@ function xce_callback(data,success_func){
     data = {};
     data.table_name = $(this).val();
     data.action = 'get-fieldnames';
-    xce_callback(data,function(ret){
+    column_edit_callback(data,function(ret){
       $('#xtm_fields').html(ret.html);
       $('#newname').val('');
       $('#columndef').val('');
@@ -179,7 +177,7 @@ jQuery(function($){ // jQuery noConflict ONLOAD ////////////////////////////////
     data.table_name = $('#xtm_tables').val();
     data.selected_column = '<?php echo $oldname ?>';
     data.action = 'column-select-options';
-    xce_callback(data,function(ret){
+    column_edit_callback(data,function(ret){
       $('#xtm_fields').html(ret.html);
     });
   }
