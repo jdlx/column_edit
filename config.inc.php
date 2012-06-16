@@ -30,3 +30,43 @@ $REX['ADDON']['xform']['SUBPAGES'][] = array ($myself , 'Fieldname Edit');
 #$REX['ADDON']['xform']['classpaths']['value'][]    = $myroot.'/xform/classes/value/';
 #$REX['ADDON']['xform']['classpaths']['validate'][] = $myroot.'/xform/classes/validate/';
 #$REX['ADDON']['xform']['classpaths']['action'][]   = $myroot.'/xform/classes/action/';
+
+// RECEIVER/API
+////////////////////////////////////////////////////////////////////////////////
+FB::log($_REQUEST,'$_REQUEST');
+$data = rex_request('fieldname_edit','string',false);FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
+
+if($data!==false)
+{
+  $data = json_decode(stripslashes($data),true);FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
+
+  if(!is_array($data)) {
+    return fieldname_edit_reply(array('error'=>'no valid POST data'));
+  }
+
+  switch ($data['action'])
+  {
+    case 'get-fieldnames':
+      FB::log('get-fieldnames..');
+      break;
+  }
+}
+
+// GENERIC REPLY FUNC
+////////////////////////////////////////////////////////////////////////////////
+function fieldname_edit_reply($data=false)
+{
+  if(!$data)
+    return false;
+
+  if(is_array($data) && count($data)>0)
+  {
+    while(ob_get_level()){
+      ob_end_clean();
+    }
+    ob_start();
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    die();
+  }
+}

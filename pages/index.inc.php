@@ -8,22 +8,53 @@
 
 // GET PARAMS
 ////////////////////////////////////////////////////////////////////////////////
-$myself    = 'fieldname_edit';
-$myroot    = $REX['INCLUDE_PATH'].'/addons/xform/plugins/'.$myself.'/';
-$page      = rex_request('page', 'string');
-$subpage   = rex_request('subpage', 'string');
-$func      = rex_request('func', 'string');
-$tablename = rex_request('tablename', 'string');
-$oldname   = rex_request('oldname', 'string');
-$newname   = rex_request('newname', 'string');
+$myself     = 'fieldname_edit';
+$myroot     = $REX['INCLUDE_PATH'].'/addons/xform/plugins/'.$myself.'/';
+$page       = rex_request('page', 'string');
+$subpage    = rex_request('subpage', 'string');
+$func       = rex_request('func', 'string');
+$table_name = rex_request('table_name', 'string');
+$oldname    = rex_request('oldname', 'string');
+$newname    = rex_request('newname', 'string');
 
-if($func=='savesettings')
+$db = new rex_sql;
+#$db->setDebug(true);
+
+// EDIT FIELDNAME
+if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='')
 {
-  $db = new rex_sql;
-  #$db->setDebug(true);
-  $db->setQuery('ALTER TABLE `'.$tablename.'` CHANGE `'.$oldname.'` `'.$newname.'` TEXT;');
-  $db->setQuery('UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$tablename.'\';');
+  $db->setQuery('ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` TEXT;');
+  $db->setQuery('UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';');
 }
+
+// TABLE SELECT
+////////////////////////////////////////////////////////////////////////////////
+$xtm_tables = $db->getArray('SELECT `table_name` FROM `rex_xform_table`;');
+
+$sel = new rex_select();
+$sel->setSize(1);
+$sel->setName('table_name');
+$sel->addOption('choose table','');
+$sel->setAttribute('id','xtm_tables');
+foreach($xtm_tables as $k => $v)
+{
+  $sel->addOption($v['table_name'],$v['table_name']);
+}
+$sel->setSelected($table_name);
+$table_select = $sel->get();
+
+// FIELD SELECT
+////////////////////////////////////////////////////////////////////////////////
+$sel = new rex_select();
+$sel->setSize(1);
+$sel->setName('oldname');
+$sel->addOption('','');
+#foreach($table_fields as $k => $v)
+#{
+#  $sel->addOption($v['table_name'],$v['table_name']);
+#}
+$sel->setSelected($oldname);
+$field_select = $sel->get();
 
 // TITLE & SUBPAGE NAVIGATION
 //////////////////////////////////////////////////////////////////////////////
@@ -32,14 +63,14 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
 // MAIN
 ////////////////////////////////////////////////////////////////////////////////
+?>
 
-echo '
 <div class="rex-addon-output">
   <div class="rex-form">
 
   <form action="index.php" method="POST" id="settings">
     <input type="hidden" name="page" value="xform" />
-    <input type="hidden" name="subpage" value="'.$myself.'" />
+    <input type="hidden" name="subpage" value="fieldname_edit" />
     <input type="hidden" name="func" value="savesettings" />
 
         <fieldset class="rex-form-col-1">
@@ -47,23 +78,30 @@ echo '
           <div class="rex-form-wrapper">
 
             <div class="rex-form-row">
-              <p class="rex-form-col-a rex-form-text">
-                <label for="textinput1">Table</label>
-                <input id="textinput1" class="rex-form-text" type="text" name="tablename" value="'.$tablename.'" />
+              <p class="rex-form-col-a rex-form-select">
+                <label for="select">Table</label>
+                <?php echo $table_select ?>
+              </p>
+            </div><!-- .rex-form-row -->
+
+            <div class="rex-form-row">
+              <p class="rex-form-col-a rex-form-select">
+                <label for="select">Field</label>
+                <?php echo $field_select ?>
               </p>
             </div><!-- .rex-form-row -->
 
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
-                <label for="textinput1">Old Fieldname</label>
-                <input id="textinput1" class="rex-form-text" type="text" name="oldname" value="'.$oldname.'" />
+                <label for="textinput1">Field</label>
+                <input id="textinput1" class="rex-form-text" type="text" name="oldname" value="<?php echo $oldname ?>" />
               </p>
             </div><!-- .rex-form-row -->
 
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
-                <label for="textinput1">New Fieldname</label>
-                <input id="textinput1" class="rex-form-text" type="text" name="newname" value="'.$newname.'" />
+                <label for="textinput1">New Name</label>
+                <input id="textinput1" class="rex-form-text" type="text" name="newname" value="<?php echo $newname ?>" />
               </p>
             </div><!-- .rex-form-row -->
 
@@ -80,4 +118,38 @@ echo '
 
   </div><!-- .rex-form -->
 </div><!-- .rex-addon-output -->
-';
+
+<script>
+// GENERIC CALLBACK FUNC
+function fieldname_edit_callback(data,success_func){console.log(data);
+  return jQuery.ajax({
+    url: 'index.php',
+    type: 'POST',
+    data: {
+      test: 'test',
+      fieldname_edit:JSON.stringify(data)
+    },
+    success: success_func,
+    error: function(xhr, ajaxOptions, thrownError){
+      console.log(xhr.status);
+      console.log(thrownError);
+    }
+  });
+};
+
+// noConflict ONLOAD ///////////////////////////////////////////////////////////
+jQuery(function($){
+
+  $('#xtm_tables').change(function(){
+    data = {};
+    data.table_name = $(this).val();
+    data.action = 'get-fieldnames';
+    //data = JSON.stringify(data);
+    fieldname_edit_callback(data,function(ret){
+      console.log('ajax sent..');
+    });
+  });
+
+});
+</script>
+
