@@ -56,7 +56,7 @@ $field_select = $sel->get();
 
 // TITLE & SUBPAGE NAVIGATION
 //////////////////////////////////////////////////////////////////////////////
-rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
+rex_title('Column Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
 //if(isset($fieldname_edit_warning)) {
 //  echo rex_warning($fieldname_edit_warning);
