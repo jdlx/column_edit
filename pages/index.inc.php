@@ -79,7 +79,7 @@ $field_select = $sel->get();
     <input type="hidden" name="func" value="savesettings" />
 
         <fieldset class="rex-form-col-1">
-          <legend>Tablemanager Column Editor</legend>
+          <legend>Tablemanager Tables/Columns</legend>
           <div class="rex-form-wrapper">
 
             <div class="rex-form-row">
@@ -96,16 +96,23 @@ $field_select = $sel->get();
               </p>
             </div><!-- .rex-form-row -->
 
+          </div><!-- .rex-form-wrapper -->
+        </fieldset>
+
+        <fieldset class="rex-form-col-1">
+          <legend>Edit Column</legend>
+          <div class="rex-form-wrapper">
+
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
-                <label for="newname">New Column Name</label>
+                <label for="newname">Name</label>
                 <input id="newname" class="rex-form-text" type="text" name="newname" value="<?php echo $newname ?>" />
               </p>
             </div><!-- .rex-form-row -->
 
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
-                <label for="columndef">Column Definition</label>
+                <label for="columndef">Definition</label>
                 <input id="columndef" class="rex-form-text" type="text" name="columndef" value="<?php echo $columndef ?>" />
               </p>
             </div><!-- .rex-form-row -->
