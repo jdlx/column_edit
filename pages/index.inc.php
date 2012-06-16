@@ -34,8 +34,8 @@ $xtm_tables = $db->getArray('SELECT `table_name` FROM `rex_xform_table`;');
 $sel = new rex_select();
 $sel->setSize(1);
 $sel->setName('table_name');
-$sel->addOption('choose table','');
 $sel->setAttribute('id','xtm_tables');
+$sel->addOption('choose table','');
 foreach($xtm_tables as $k => $v)
 {
   $sel->addOption($v['table_name'],$v['table_name']);
@@ -48,11 +48,8 @@ $table_select = $sel->get();
 $sel = new rex_select();
 $sel->setSize(1);
 $sel->setName('oldname');
+$sel->setAttribute('id','xtm_fields');
 $sel->addOption('','');
-#foreach($table_fields as $k => $v)
-#{
-#  $sel->addOption($v['table_name'],$v['table_name']);
-#}
 $sel->setSelected($oldname);
 $field_select = $sel->get();
 
@@ -93,15 +90,8 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
-                <label for="textinput1">Field</label>
-                <input id="textinput1" class="rex-form-text" type="text" name="oldname" value="<?php echo $oldname ?>" />
-              </p>
-            </div><!-- .rex-form-row -->
-
-            <div class="rex-form-row">
-              <p class="rex-form-col-a rex-form-text">
-                <label for="textinput1">New Name</label>
-                <input id="textinput1" class="rex-form-text" type="text" name="newname" value="<?php echo $newname ?>" />
+                <label for="newname">New Name</label>
+                <input id="newname" class="rex-form-text" type="text" name="newname" value="<?php echo $newname ?>" />
               </p>
             </div><!-- .rex-form-row -->
 
@@ -121,9 +111,9 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
 <script>
 // GENERIC CALLBACK FUNC
-function fieldname_edit_callback(data,success_func){console.log(data);
+function fieldname_edit_callback(data,success_func){
   return jQuery.ajax({
-    url: 'index.php',
+    url: '../index.php',
     type: 'POST',
     data: {
       test: 'test',
@@ -144,10 +134,14 @@ jQuery(function($){
     data = {};
     data.table_name = $(this).val();
     data.action = 'get-fieldnames';
-    //data = JSON.stringify(data);
     fieldname_edit_callback(data,function(ret){
-      console.log('ajax sent..');
+      // console.log(ret);
+      $('#xtm_fields').html(ret.html);
     });
+  });
+
+  $('#xtm_fields').change(function(){
+    $('#newname').val($(this).val());
   });
 
 });

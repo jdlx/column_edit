@@ -22,7 +22,7 @@ $func             = rex_request('func'            , 'string' , 'false');
 
 // XFORM SUBPAGE
 ////////////////////////////////////////////////////////////////////////////////
-$REX['ADDON']['xform']['SUBPAGES'][] = array ($myself , 'Fieldname Edit');
+$REX['ADDON']['xform']['SUBPAGES'][] = array($myself , 'Fieldname Edit');
 
 
 // ADD OWN XFORM CLASSES (DON'T INCLUDE DIR IF EMPTY)
@@ -33,12 +33,11 @@ $REX['ADDON']['xform']['SUBPAGES'][] = array ($myself , 'Fieldname Edit');
 
 // RECEIVER/API
 ////////////////////////////////////////////////////////////////////////////////
-FB::log($_REQUEST,'$_REQUEST');
-$data = rex_request('fieldname_edit','string',false);FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
+$data = rex_request('fieldname_edit','string',false);
 
 if($data!==false)
 {
-  $data = json_decode(stripslashes($data),true);FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
+  $data = json_decode(stripslashes($data),true);                                #FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
 
   if(!is_array($data)) {
     return fieldname_edit_reply(array('error'=>'no valid POST data'));
@@ -47,8 +46,17 @@ if($data!==false)
   switch ($data['action'])
   {
     case 'get-fieldnames':
-      FB::log('get-fieldnames..');
-      break;
+      $db = new rex_sql;
+      $options = '';
+      foreach($db->getArray('SELECT `f1` FROM `rex_xform_field` WHERE `table_name`=\''.$data['table_name'].'\';') as $k => $v)
+      {
+        $options .= '<option value="'.$v['f1'].'">'.$v['f1'].'</option>';
+      }
+      fieldname_edit_reply(array('html'=>$options));
+    break;
+
+    default:
+      //
   }
 }
 
