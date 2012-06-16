@@ -16,14 +16,15 @@ $func       = rex_request('func', 'string');
 $table_name = rex_request('table_name', 'string');
 $oldname    = rex_request('oldname', 'string');
 $newname    = rex_request('newname', 'string');
+$columndef  = rex_request('columndef', 'string');
 
 $db = new rex_sql;
 #$db->setDebug(true);
 
 // EDIT FIELDNAME
-if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='')
+if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='' && $columndef!='')
 {
-  $db->setQuery('ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` TEXT;');
+  $db->setQuery('ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` '.stripslashes($columndef).';');
   $db->setQuery('UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';');
 }
 
@@ -35,7 +36,7 @@ $sel = new rex_select();
 $sel->setSize(1);
 $sel->setName('table_name');
 $sel->setAttribute('id','xtm_tables');
-$sel->addOption('choose table','');
+$sel->addOption('CHOOSE TABLE','');
 foreach($xtm_tables as $k => $v)
 {
   $sel->addOption($v['table_name'],$v['table_name']);
@@ -57,6 +58,9 @@ $field_select = $sel->get();
 //////////////////////////////////////////////////////////////////////////////
 rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
+//if(isset($fieldname_edit_warning)) {
+//  echo rex_warning($fieldname_edit_warning);
+//}
 
 // MAIN
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +75,7 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
     <input type="hidden" name="func" value="savesettings" />
 
         <fieldset class="rex-form-col-1">
-          <legend>Tablemanager Fieldname Editor</legend>
+          <legend>Tablemanager Column Editor</legend>
           <div class="rex-form-wrapper">
 
             <div class="rex-form-row">
@@ -83,15 +87,22 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-select">
-                <label for="select">Field</label>
+                <label for="select">Column</label>
                 <?php echo $field_select ?>
               </p>
             </div><!-- .rex-form-row -->
 
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
-                <label for="newname">New Name</label>
+                <label for="newname">New Column Name</label>
                 <input id="newname" class="rex-form-text" type="text" name="newname" value="<?php echo $newname ?>" />
+              </p>
+            </div><!-- .rex-form-row -->
+
+            <div class="rex-form-row">
+              <p class="rex-form-col-a rex-form-text">
+                <label for="columndef">Column Definition</label>
+                <input id="columndef" class="rex-form-text" type="text" name="columndef" value="<?php echo $columndef ?>" />
               </p>
             </div><!-- .rex-form-row -->
 
@@ -111,7 +122,7 @@ rex_title('Fieldname Edit', $REX['ADDON'][$page]['SUBPAGES']);
 
 <script>
 // GENERIC CALLBACK FUNC
-function fieldname_edit_callback(data,success_func){
+function xfe_callback(data,success_func){
   return jQuery.ajax({
     url: '../index.php',
     type: 'POST',
@@ -131,17 +142,24 @@ function fieldname_edit_callback(data,success_func){
 jQuery(function($){
 
   $('#xtm_tables').change(function(){
+    //if($(this).val()==''){
+    //  return false;
+    //}
     data = {};
     data.table_name = $(this).val();
     data.action = 'get-fieldnames';
-    fieldname_edit_callback(data,function(ret){
+    xfe_callback(data,function(ret){
       // console.log(ret);
       $('#xtm_fields').html(ret.html);
+      $('#newname').val('');
+      $('#columndef').val('');
     });
   });
 
   $('#xtm_fields').change(function(){
     $('#newname').val($(this).val());
+    mysql_opts = $('#xtm_fields #opt_'+$(this).val()).attr('data-mysql-create-opts')
+    $('#columndef').val(mysql_opts);
   });
 
 });

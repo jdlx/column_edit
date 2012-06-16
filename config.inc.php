@@ -22,7 +22,7 @@ $func             = rex_request('func'            , 'string' , 'false');
 
 // XFORM SUBPAGE
 ////////////////////////////////////////////////////////////////////////////////
-$REX['ADDON']['xform']['SUBPAGES'][] = array($myself , 'Fieldname Edit');
+$REX['ADDON']['xform']['SUBPAGES'][] = array($myself , 'Column Edit');
 
 
 // ADD OWN XFORM CLASSES (DON'T INCLUDE DIR IF EMPTY)
@@ -46,13 +46,33 @@ if($data!==false)
   switch ($data['action'])
   {
     case 'get-fieldnames':
+      if($data['table_name']=='') {
+        fieldname_edit_reply(array('html'=>''));
+      }
+
       $db = new rex_sql;
-      $options = '';
+
+      // GET COLUMN DEFINITIONS
+      $db->setQuery('SHOW CREATE TABLE `'.$data['table_name'].'`;');
+      $column_options = array();
+      $create_parts = explode("\n",$db->getValue('Create Table'));              #FB::log($create_parts,__CLASS__.'::'.__FUNCTION__.' $create_parts');
+      foreach ($create_parts as $part) {
+        preg_match('#`(\w+)`([^,`]+),#',trim($part),$matches);                  #FB::log($matches,__CLASS__.'::'.__FUNCTION__.' $matches');
+        if(count($matches)===3) {
+          $column_options[$matches[1]] = trim($matches[2]);
+        }
+      }                                                                         #FB::log($column_options,__CLASS__.'::'.__FUNCTION__.' $column_options');
+
+      // BUILD SELECT OPTIONS
+      $select_options = '<option id="opt_"data-mysql-create-opts="" value="">CHOOSE COLUMN</option>';
       foreach($db->getArray('SELECT `f1` FROM `rex_xform_field` WHERE `table_name`=\''.$data['table_name'].'\';') as $k => $v)
       {
-        $options .= '<option value="'.$v['f1'].'">'.$v['f1'].'</option>';
+        //if(!isset($v['f1']) || !isset($column_options[$v['f1']])) {
+        //  $fieldname_edit_warning = 'crap.. out of sync!';
+        //}
+        $select_options .= '<option id="opt_'.$v['f1'].'" data-mysql-create-opts="'.$column_options[$v['f1']].'" value="'.$v['f1'].'">'.$v['f1'].'</option>';
       }
-      fieldname_edit_reply(array('html'=>$options));
+      fieldname_edit_reply(array('html'=>$select_options));
     break;
 
     default:
