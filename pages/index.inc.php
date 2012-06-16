@@ -44,7 +44,7 @@ $sel = new rex_select();
 $sel->setSize(1);
 $sel->setName('table_name');
 $sel->setAttribute('id','xtm_tables');
-$sel->addOption('CHOOSE TABLE','');
+$sel->addOption('SELECT XFORM TABLE:','');
 foreach($xtm_tables as $k => $v)
 {
   $sel->addOption($v['table_name'],$v['table_name']);
@@ -113,7 +113,7 @@ $field_select = $sel->get();
             <div class="rex-form-row">
               <p class="rex-form-col-a rex-form-text">
                 <label for="columndef">Definition</label>
-                <input id="columndef" class="rex-form-text" type="text" name="columndef" value="<?php echo $columndef ?>" />
+                <input id="columndef" class="rex-form-text" type="text" name="columndef" value="<?php echo stripslashes($columndef) ?>" />
               </p>
             </div><!-- .rex-form-row -->
 
@@ -133,7 +133,7 @@ $field_select = $sel->get();
 
 <script>
 // GENERIC CALLBACK FUNC
-function xfe_callback(data,success_func){
+function xce_callback(data,success_func){
   return jQuery.ajax({
     url: '../index.php',
     type: 'POST',
@@ -149,18 +149,14 @@ function xfe_callback(data,success_func){
   });
 };
 
-// noConflict ONLOAD ///////////////////////////////////////////////////////////
-jQuery(function($){
+////////////////////////////////////////////////////////////////////////////////
+(function($){ // jQuery noConflict /////////////////////////////////////////////
 
   $('#xtm_tables').change(function(){
-    //if($(this).val()==''){
-    //  return false;
-    //}
     data = {};
     data.table_name = $(this).val();
     data.action = 'get-fieldnames';
-    xfe_callback(data,function(ret){
-      // console.log(ret);
+    xce_callback(data,function(ret){
       $('#xtm_fields').html(ret.html);
       $('#newname').val('');
       $('#columndef').val('');
@@ -169,10 +165,26 @@ jQuery(function($){
 
   $('#xtm_fields').change(function(){
     $('#newname').val($(this).val());
-    mysql_opts = $('#xtm_fields #opt_'+$(this).val()).attr('data-mysql-create-opts')
-    $('#columndef').val(mysql_opts);
+    $('#columndef').val($('#xtm_fields #opt_'+$(this).val()).attr('data-mysql-create-opts'));
   });
 
-});
+})(jQuery); // end jQuery noConflict ///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+jQuery(function($){ // jQuery noConflict ONLOAD ////////////////////////////////
+
+  if($('#xtm_tables').val()!=''){
+    data = {};
+    data.table_name = $('#xtm_tables').val();
+    data.selected_column = '<?php echo $oldname ?>';
+    data.action = 'column-select-options';
+    xce_callback(data,function(ret){
+      $('#xtm_fields').html(ret.html);
+    });
+  }
+
+}); // end jQuery noConflict ONLOAD ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 </script>
 

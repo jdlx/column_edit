@@ -37,7 +37,7 @@ $data = rex_request('fieldname_edit','string',false);
 
 if($data!==false)
 {
-  $data = json_decode(stripslashes($data),true);                                #FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
+  $data = json_decode(stripslashes($data),true);                                FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
 
   if(!is_array($data)) {
     return fieldname_edit_reply(array('error'=>'no valid POST data'));
@@ -45,7 +45,7 @@ if($data!==false)
 
   switch ($data['action'])
   {
-    case 'get-fieldnames':
+    case 'column-select-options':
       if($data['table_name']=='') {
         fieldname_edit_reply(array('html'=>''));
       }
@@ -64,13 +64,11 @@ if($data!==false)
       }                                                                         #FB::log($column_options,__CLASS__.'::'.__FUNCTION__.' $column_options');
 
       // BUILD SELECT OPTIONS
-      $select_options = '<option id="opt_"data-mysql-create-opts="" value="">CHOOSE COLUMN</option>';
+      $select_options = '<option id="opt_"data-mysql-create-opts="" value="">SELECT COLUMN:</option>';
       foreach($db->getArray('SELECT `f1` FROM `rex_xform_field` WHERE `table_name`=\''.$data['table_name'].'\';') as $k => $v)
       {
-        //if(!isset($v['f1']) || !isset($column_options[$v['f1']])) {
-        //  $fieldname_edit_warning = 'crap.. out of sync!';
-        //}
-        $select_options .= '<option id="opt_'.$v['f1'].'" data-mysql-create-opts="'.$column_options[$v['f1']].'" value="'.$v['f1'].'">'.$v['f1'].'</option>';
+        $selected = (isset($data['selected_column']) && $data['selected_column']==$v['f1']) ? ' selected="selected"' : '' ;
+        $select_options .= '<option id="opt_'.$v['f1'].'" data-mysql-create-opts="'.$column_options[$v['f1']].'" value="'.$v['f1'].'" '.$selected.'>'.$v['f1'].'</option>';
       }
       fieldname_edit_reply(array('html'=>$select_options));
     break;
