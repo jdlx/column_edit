@@ -2,7 +2,7 @@
 /**
  * column_edit - XFORM Plugin
  *
- * @version 0.8.0
+ * @version 0.8.1
  * @author http://rexdev.de
  * @package redaxo 4.3
  * @package xform 2.9
@@ -18,7 +18,9 @@ $func       = rex_request('func', 'string');
 $table_name = rex_request('table_name', 'string');
 $oldname    = rex_request('oldname', 'string');
 $newname    = rex_request('newname', 'string');
-$columndef  = rex_request('columndef', 'string');FB::log($REX,__CLASS__.'::'.__FUNCTION__.' $REX');
+$columndef  = rex_request('columndef', 'string');
+
+$error      = false;
 
 // TITLE & SUBPAGE NAVIGATION
 //////////////////////////////////////////////////////////////////////////////
@@ -41,6 +43,7 @@ if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='' && $
     }
   } else {
     echo rex_warning('"'.$alter_qry.'"<br/>'.$db->getErrno().' - '.$db->getError());
+    $error = true;
   }
 }
 
@@ -181,7 +184,7 @@ jQuery(function($){ // jQuery noConflict ONLOAD ////////////////////////////////
   if($('#xtm_tables').val()!=''){
     data = {};
     data.table_name = $('#xtm_tables').val();
-    data.selected_column = '<?php echo $newname ?>';
+    data.selected_column = '<?php echo !$error ? $newname : $oldname; ?>';
     data.action = 'column-select-options';
     column_edit_callback(data,function(ret){
       $('#xtm_fields').html(ret.html);

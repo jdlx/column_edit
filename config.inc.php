@@ -2,7 +2,7 @@
 /**
  * column_edit - XFORM Plugin
  *
- * @version 0.8.0
+ * @version 0.8.1
  * @author http://rexdev.de
  * @package redaxo 4.3
  * @package xform 2.9
@@ -30,7 +30,7 @@ $REX['ADDON'][$myself]['VERSION'] = array
 (
 'VERSION'      => 0,
 'MINORVERSION' => 8,
-'SUBVERSION'   => 0,
+'SUBVERSION'   => 1,
 );
 $REX['ADDON']['version'][$myself]     = implode('.', $REX['ADDON'][$myself]['VERSION']);
 $REX['ADDON']['author'][$myself]      = 'rexdev.de';
