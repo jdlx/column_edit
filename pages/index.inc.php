@@ -30,8 +30,14 @@ $db = new rex_sql;
 if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='' && $columndef!='')
 {
   $alter_qry = 'ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` '.stripslashes($columndef).';';
+  $field_qry = 'UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';';
   if($db->setQuery($alter_qry)) {
-    $db->setQuery('UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';');
+    echo rex_info('Sucessfull: '.$alter_qry);
+    if($db->setQuery($field_qry)) {
+      echo rex_info('Sucessfull: '.$field_qry);
+    } else {
+      echo rex_warning('"'.$field_qry.'"<br/>'.$db->getErrno().' - '.$db->getError());
+    }
   } else {
     echo rex_warning('"'.$alter_qry.'"<br/>'.$db->getErrno().' - '.$db->getError());
   }
@@ -117,7 +123,7 @@ $field_select = $sel->get();
 
             <div class="rex-form-row rex-form-element-v2">
               <p class="rex-form-submit">
-                <input class="rex-form-submit" type="submit" id="submit" name="submit" value="Rename Field" />
+                <input class="rex-form-submit" type="submit" id="submit" name="submit" value="Apply Changes" />
               </p>
             </div><!-- .rex-form-row -->
 
@@ -136,7 +142,6 @@ function column_edit_callback(data,success_func){
     url: '../index.php',
     type: 'POST',
     data: {
-      test: 'test',
       column_edit:JSON.stringify(data)
     },
     success: success_func,
@@ -153,7 +158,7 @@ function column_edit_callback(data,success_func){
   $('#xtm_tables').change(function(){
     data = {};
     data.table_name = $(this).val();
-    data.action = 'get-fieldnames';
+    data.action = 'column-select-options';
     column_edit_callback(data,function(ret){
       $('#xtm_fields').html(ret.html);
       $('#newname').val('');
@@ -175,7 +180,7 @@ jQuery(function($){ // jQuery noConflict ONLOAD ////////////////////////////////
   if($('#xtm_tables').val()!=''){
     data = {};
     data.table_name = $('#xtm_tables').val();
-    data.selected_column = '<?php echo $oldname ?>';
+    data.selected_column = '<?php echo $newname ?>';
     data.action = 'column-select-options';
     column_edit_callback(data,function(ret){
       $('#xtm_fields').html(ret.html);
