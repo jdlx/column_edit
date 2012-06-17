@@ -2,6 +2,7 @@
 /**
  * column_edit - XFORM Plugin
  *
+ * @version 0.8.0
  * @author http://rexdev.de
  * @package redaxo 4.3
  * @package xform 2.9
@@ -17,11 +18,11 @@ $func       = rex_request('func', 'string');
 $table_name = rex_request('table_name', 'string');
 $oldname    = rex_request('oldname', 'string');
 $newname    = rex_request('newname', 'string');
-$columndef  = rex_request('columndef', 'string');
+$columndef  = rex_request('columndef', 'string');FB::log($REX,__CLASS__.'::'.__FUNCTION__.' $REX');
 
 // TITLE & SUBPAGE NAVIGATION
 //////////////////////////////////////////////////////////////////////////////
-rex_title('Column Edit', $REX['ADDON'][$page]['SUBPAGES']);
+rex_title('Column Edit <span style="color:#CBCBCB;font-size:0.5em">'.$REX['ADDON']['plugins']['xform']['version'][$myself].'</span>', $REX['ADDON'][$page]['SUBPAGES']);
 
 $db = new rex_sql;
 #$db->setDebug(true);
@@ -51,7 +52,7 @@ $sel = new rex_select();
 $sel->setSize(1);
 $sel->setName('table_name');
 $sel->setAttribute('id','xtm_tables');
-$sel->addOption('SELECT XFORM TABLE:','');
+$sel->addOption('Select Table:','');
 foreach($xtm_tables as $k => $v)
 {
   $sel->addOption($v['table_name'],$v['table_name']);

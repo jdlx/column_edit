@@ -2,6 +2,7 @@
 /**
  * column_edit - XFORM Plugin
  *
+ * @version 0.8.0
  * @author http://rexdev.de
  * @package redaxo 4.3
  * @package xform 2.9
@@ -20,6 +21,22 @@ $rex_xform_search = rex_request('rex_xform_search', 'int'    , 0      );
 $list             = rex_request('list'            , 'string' , 'false');
 $send             = rex_request('send'            , 'string' , 'false');
 $func             = rex_request('func'            , 'string' , 'false');
+
+
+// ADDON REX COMMONS
+////////////////////////////////////////////////////////////////////////////////
+$REX['ADDON']['rxid'][$myself] = '720';
+$REX['ADDON'][$myself]['VERSION'] = array
+(
+'VERSION'      => 0,
+'MINORVERSION' => 8,
+'SUBVERSION'   => 0,
+);
+$REX['ADDON']['version'][$myself]     = implode('.', $REX['ADDON'][$myself]['VERSION']);
+$REX['ADDON']['author'][$myself]      = 'rexdev.de';
+$REX['ADDON']['supportpage'][$myself] = 'forum.redaxo.de';
+$REX['ADDON']['perm'][$myself]        = $myself.'[]';
+$REX['PERM'][]                        = $myself.'[]';
 
 // XFORM SUBPAGE
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +82,7 @@ if($data!==false)
       }                                                                         #FB::log($column_options,__CLASS__.'::'.__FUNCTION__.' $column_options');
 
       // BUILD SELECT OPTIONS
-      $select_options = '<option id="opt_"data-mysql-create-opts="" value="">SELECT COLUMN:</option>';
+      $select_options = '<option id="opt_"data-mysql-create-opts="" value="">Select Column:</option>';
       foreach($db->getArray('SELECT `f1` FROM `rex_xform_field` WHERE `table_name`=\''.$data['table_name'].'\';') as $k => $v)
       {
         $selected = (isset($data['selected_column']) && $data['selected_column']==$v['f1']) ? ' selected="selected"' : '' ;
