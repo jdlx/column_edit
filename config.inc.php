@@ -25,7 +25,7 @@ $func             = rex_request('func'            , 'string' , 'false');
 
 // ADDON REX COMMONS
 ////////////////////////////////////////////////////////////////////////////////
-$REX['ADDON']['rxid'][$myself] = '720';
+$REX['ADDON']['rxid'][$myself] = '990';
 $REX['ADDON'][$myself]['VERSION'] = array
 (
 'VERSION'      => 0,
