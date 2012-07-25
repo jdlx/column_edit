@@ -2,10 +2,10 @@
 /**
  * column_edit - XFORM Plugin
  *
- * @version 0.8.1
- * @author http://rexdev.de
- * @package redaxo 4.3
- * @package xform 2.9
+ * @version 0.8.2
+ * @author  http://rexdev.de
+ * @package redaxo 4.3.x/4.4.x
+ * @package xform 2.9.x
  */
 
 
@@ -30,7 +30,7 @@ $REX['ADDON'][$myself]['VERSION'] = array
 (
 'VERSION'      => 0,
 'MINORVERSION' => 8,
-'SUBVERSION'   => 1,
+'SUBVERSION'   => 2,
 );
 $REX['ADDON']['version'][$myself]     = implode('.', $REX['ADDON'][$myself]['VERSION']);
 $REX['ADDON']['author'][$myself]      = 'rexdev.de';
