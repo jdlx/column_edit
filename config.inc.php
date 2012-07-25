@@ -40,7 +40,9 @@ $REX['PERM'][]                        = $myself.'[]';
 
 // XFORM SUBPAGE
 ////////////////////////////////////////////////////////////////////////////////
-$REX['ADDON']['xform']['SUBPAGES'][] = array($myself , 'Column Edit');
+if ($REX['USER'] && ($REX['USER']->isAdmin() || $REX['USER']->hasPerm("xform[column_edit]"))){
+  $REX['ADDON']['xform']['SUBPAGES'][] = array($myself , 'Column Edit');
+}
 
 
 // ADD OWN XFORM CLASSES (DON'T INCLUDE DIR IF EMPTY)
