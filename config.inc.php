@@ -2,7 +2,7 @@
 /**
  * column_edit - XFORM Plugin
  *
- * @version 0.8.2
+ * @version 1.0.0
  * @author  http://rexdev.de
  * @package redaxo 4.3.x/4.4.x
  * @package xform 2.9.x
@@ -29,14 +29,8 @@ $func             = rex_request('func'            , 'string' , 'false');
 
 // ADDON REX COMMONS
 ////////////////////////////////////////////////////////////////////////////////
-$REX['ADDON']['rxid'][$myself] = '990';
-$REX['ADDON'][$myself]['VERSION'] = array
-(
-'VERSION'      => 0,
-'MINORVERSION' => 8,
-'SUBVERSION'   => 2,
-);
-$REX['ADDON']['version'][$myself]     = implode('.', $REX['ADDON'][$myself]['VERSION']);
+$REX['ADDON']['rxid'][$myself]        = '990';
+$REX['ADDON']['version'][$myself]     = '1.0.0';
 $REX['ADDON']['author'][$myself]      = 'rexdev.de';
 $REX['ADDON']['supportpage'][$myself] = 'forum.redaxo.de';
 $REX['ADDON']['perm'][$myself]        = $myself.'[]';
