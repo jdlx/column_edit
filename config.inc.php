@@ -8,6 +8,10 @@
  * @package xform 2.9.x
  */
 
+if(!$REX['REDAXO']) {
+  return;
+}
+
 
 $myself           = 'column_edit';
 $myroot           = $REX['INCLUDE_PATH'].'/addons/xform/plugins/'.$myself;

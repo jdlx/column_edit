@@ -143,7 +143,7 @@ $field_select = $sel->get();
 // GENERIC CALLBACK FUNC
 function column_edit_callback(data,success_func){
   return jQuery.ajax({
-    url: '../index.php',
+    url: 'index.php',
     type: 'POST',
     data: {
       column_edit:JSON.stringify(data)
