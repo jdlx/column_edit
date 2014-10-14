@@ -88,7 +88,7 @@ rex_register_extension('ADDONS_INCLUDED', function()
 
         // GET COLUMN DEFINITIONS
         $db->setQuery('SHOW CREATE TABLE `'.$data['table_name'].'`;');
-        $column_options = array(); fb($db->getValue('Create Table'));
+        $column_options = array();
         $create_parts = explode(PHP_EOL,$db->getValue('Create Table'));
         foreach ($create_parts as $part) {
           preg_match('#^\s*`(\w+)`([^,`]+),$#',trim($part),$matches);
