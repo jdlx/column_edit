@@ -2,10 +2,10 @@
 /**
  * column_edit - XFORM Plugin
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @author  http://rexdev.de
- * @package redaxo 4.3.x/4.4.x
- * @package xform 2.9.x
+ * @package redaxo 4.5.x/4.6.x
+ * @package xform 2.9.x - 4.8.0
  */
 
 $myself = 'column_edit';
