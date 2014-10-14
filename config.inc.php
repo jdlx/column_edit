@@ -43,59 +43,6 @@ if ($REX['USER'] && ($REX['USER']->isAdmin() || $REX['USER']->hasPerm("xform[col
 }
 
 
-// ADD OWN XFORM CLASSES (DON'T INCLUDE DIR IF EMPTY)
-////////////////////////////////////////////////////////////////////////////////
-#$REX['ADDON']['xform']['classpaths']['value'][]    = $myroot.'/xform/classes/value/';
-#$REX['ADDON']['xform']['classpaths']['validate'][] = $myroot.'/xform/classes/validate/';
-#$REX['ADDON']['xform']['classpaths']['action'][]   = $myroot.'/xform/classes/action/';
-
-// RECEIVER/API
-////////////////////////////////////////////////////////////////////////////////
-$data = rex_request('column_edit','string',false);
-
-if($data!==false)
-{
-  $data = json_decode(stripslashes($data),true);                                #FB::log($data,__CLASS__.'::'.__FUNCTION__.' $data');
-
-  if(!is_array($data)) {
-    return column_edit_reply(array('error'=>'no valid POST data'));
-  }
-
-  switch ($data['action'])
-  {
-    case 'column-select-options':
-      if($data['table_name']=='') {
-        column_edit_reply(array('html'=>''));
-      }
-
-      $db = new rex_sql;
-
-      // GET COLUMN DEFINITIONS
-      $db->setQuery('SHOW CREATE TABLE `'.$data['table_name'].'`;');
-      $column_options = array();
-      $create_parts = explode("\n",$db->getValue('Create Table'));              #FB::log($create_parts,__CLASS__.'::'.__FUNCTION__.' $create_parts');
-      foreach ($create_parts as $part) {
-        preg_match('#`(\w+)`([^,`]+),#',trim($part),$matches);                  #FB::log($matches,__CLASS__.'::'.__FUNCTION__.' $matches');
-        if(count($matches)===3) {
-          $column_options[$matches[1]] = trim($matches[2]);
-        }
-      }                                                                         #FB::log($column_options,__CLASS__.'::'.__FUNCTION__.' $column_options');
-
-      // BUILD SELECT OPTIONS
-      $select_options = '<option id="opt_"data-mysql-create-opts="" value="">Select Column:</option>';
-      foreach($db->getArray('SELECT `f1` FROM `rex_xform_field` WHERE `table_name`=\''.$data['table_name'].'\';') as $k => $v)
-      {
-        $selected = (isset($data['selected_column']) && $data['selected_column']==$v['f1']) ? ' selected="selected"' : '' ;
-        $select_options .= '<option id="opt_'.$v['f1'].'" data-mysql-create-opts="'.$column_options[$v['f1']].'" value="'.$v['f1'].'" '.$selected.'>'.$v['f1'].'</option>';
-      }
-      column_edit_reply(array('html'=>$select_options));
-    break;
-
-    default:
-      //
-  }
-}
-
 // GENERIC REPLY FUNC
 ////////////////////////////////////////////////////////////////////////////////
 function column_edit_reply($data=false)
@@ -114,3 +61,59 @@ function column_edit_reply($data=false)
     die();
   }
 }
+
+
+// RECEIVER/API
+////////////////////////////////////////////////////////////////////////////////
+rex_register_extension('ADDONS_INCLUDED', function()
+{
+  $data = rex_request('column_edit','string',false);
+
+  if($data!==false)
+  {
+    $data = json_decode(stripslashes($data),true);
+
+    if(!is_array($data)) {
+      return column_edit_reply(array('error'=>'no valid POST data'));
+    }
+
+    switch ($data['action'])
+    {
+      case 'column-select-options':
+        if($data['table_name']=='') {
+          column_edit_reply(array('html'=>''));
+        }
+
+        $db = new rex_sql;
+
+        // GET COLUMN DEFINITIONS
+        $db->setQuery('SHOW CREATE TABLE `'.$data['table_name'].'`;');
+        $column_options = array(); fb($db->getValue('Create Table'));
+        $create_parts = explode(PHP_EOL,$db->getValue('Create Table'));
+        foreach ($create_parts as $part) {
+          preg_match('#^\s*`(\w+)`([^,`]+),$#',trim($part),$matches);
+          if(count($matches)===3) {
+            $column_options[$matches[1]] = trim($matches[2]);
+          }
+        }
+
+        // NAME FIELD DEPENDING ON XFORM VERSION ..
+        $name_field = version_compare(rex_addon::getVersion('xform'),'4.8','>=') ? 'name' : 'f1';
+
+        // BUILD SELECT OPTIONS
+        $select_options = '<option id="opt_"data-mysql-create-opts="" value="">Select Column:</option>';
+        foreach($db->getArray('SELECT `'.$name_field.'` FROM `rex_xform_field` WHERE `table_name`=\''.$data['table_name'].'\';') as $k => $v)
+        {
+          $selected = (isset($data['selected_column']) && $data['selected_column']==$v[$name_field]) ? ' selected="selected"' : '' ;
+          $select_options .= '<option id="opt_'.$v[$name_field].'" data-mysql-create-opts="'.$column_options[$v[$name_field]].'" value="'.$v[$name_field].'" '.$selected.'>'.$v[$name_field].'</option>';
+        }
+        column_edit_reply(array('html'=>$select_options));
+      break;
+
+      default:
+        //
+    }
+  }
+
+
+}); // rex_register_extension
