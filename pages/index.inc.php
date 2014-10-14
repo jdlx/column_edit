@@ -33,7 +33,10 @@ $db = new rex_sql;
 if($func=='savesettings' && $table_name!='' && $oldname!='' && $newname!='' && $columndef!='')
 {
   $alter_qry = 'ALTER TABLE `'.$table_name.'` CHANGE `'.$oldname.'` `'.$newname.'` '.stripslashes($columndef).';';
-  $field_qry = 'UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';';
+
+  $field_qry = version_compare(rex_addon::getVersion('xform'),'4.8','>=')
+             ? 'UPDATE `rex_xform_field` SET `name`=\''.$newname.'\' WHERE `name`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';'
+             : 'UPDATE `rex_xform_field` SET `f1`=\''.$newname.'\' WHERE `f1`=\''.$oldname.'\' AND `table_name`=\''.$table_name.'\';';
   if($db->setQuery($alter_qry)) {
     echo rex_info('Sucessfull: '.$alter_qry);
     if($db->setQuery($field_qry)) {
