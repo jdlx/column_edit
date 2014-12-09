@@ -1,0 +1,5 @@
+h1. column_edit
+
+Redaxo XForm Plugin zum einfachen editieren der Mysql-Felddefintion und des XForm-internen Namens eines Feldes.
+
+!http://rexdev.de/index.php?rex_img_type=github_readme&rex_img_file=redaxo_xform_plugin_column_edit.png!
